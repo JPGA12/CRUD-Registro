@@ -32,7 +32,13 @@ Asegúrate de tener instalados los siguientes programas en tu sistema:
 ## Ejecución del Proyecto
   **Para ejecutar la aplicación, usa el siguiente comando:**
 
-    flask run
+  Carga los detalles graficos con Tailwind
+   
+      npx tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch\ 
+      
+   Ejecuta el servidor con Flas
+   
+      flask run
   **Esto iniciará el servidor de desarrollo en** http://127.0.0.1:5000.
 
 ## Consideraciones de Seguridad
