@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - CRUD de Productos</title>
+    <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="container mx-auto">
+        <h1 class="text-3xl font-bold mb-4">Dashboard - Productos</h1>
+        <a href="{{ url_for('logout') }}" class="text-blue-500 hover:underline">Cerrar sesión</a>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <ul class="mb-4">
+              {% for category, message in messages %}
+                <li class="text-white bg-{{ category }}-500 rounded p-2 my-2 text-center">{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+        <!-- Tabla de productos -->
+        <table class="min-w-full bg-white shadow-md rounded mb-6">
+            <thead>
+                <tr>
+                    <th class="py-2">ID</th>
+                    <th class="py-2">Nombre</th>
+                    <th class="py-2">Precio</th>
+                    <th class="py-2">Cantidad</th>
+                    <th class="py-2">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td class="py-2 text-center">{{ product.id }}</td>
+                    <td class="py-2 text-center">{{ product.name }}</td>
+                    <td class="py-2 text-center">${{ product.price }}</td>
+                    <td class="py-2 text-center">{{ product.quantity }}</td>
+                    <td class="py-2 text-center">
+                        {% if is_admin %}
+                        <form action="{{ url_for('delete_product_route', product_id=product.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="text-red-500 hover:underline">Eliminar</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if is_admin %}
+        <!-- Formulario para agregar producto -->
+        <form action="{{ url_for('add_product_route') }}" method="post" class="bg-white p-4 shadow-md rounded">
+            <h2 class="text-xl font-bold mb-4">Agregar Producto</h2>
+            <input type="text" name="name" placeholder="Nombre" required class="block w-full mb-2">
+            <input type="text" name="price" placeholder="Precio" required class="block w-full mb-2">
+            <input type="text" name="quantity" placeholder="Cantidad" required class="block w-full mb-2">
+            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded">Agregar</button>
+        </form>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Usuario</title>
+    <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex justify-center items-center h-screen">
+    <div class="w-full max-w-md mx-auto">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <ul class="mb-4">
+              {% for category, message in messages %}
+                <li class="text-white bg-{{ category }}-500 rounded p-2 my-2 text-center">{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+        <div class="bg-white shadow-lg rounded-lg px-10 py-8">
+            <h2 class="text-center text-2xl font-bold mb-6">Registrar Usuario</h2>
+            <form action="{{ url_for('register') }}" method="POST" class="mb-4">
+                <div class="mb-4">
+                    <input type="text" name="full_name" placeholder="Nombre Completo" required
+                           class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4">
+                    <input type="text" name="username" placeholder="Usuario" required
+                           class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4">
+                    <input type="email" name="email" placeholder="Correo Electrónico" required
+                           class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4">
+                    <input type="text" name="phone" placeholder="Teléfono" required
+                           class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-6">
+                    <input type="password" name="password" placeholder="Contraseña" required
+                           class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="flex items-center justify-center mb-4">
+                    <button type="submit"
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline">
+                        Registrar
+                    </button>
+                </div>
+            </form>
+            <!-- Botón para regresar al login -->
+            <div class="text-center">
+                <a href="{{ url_for('index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline">
+                    Regresar al Login
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
