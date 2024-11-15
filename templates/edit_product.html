@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Producto</title>
+    <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/flash.js') }}" defer></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center h-screen">
+
+    <!-- Notificaciones flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div id="flash-messages" class="fixed top-4 right-4 space-y-2">
+          {% for category, message in messages %}
+            <div class="text-white px-4 py-2 rounded shadow-lg bg-{{ 'red' if category == 'danger' else 'green' }}-500">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="w-full max-w-md mx-auto bg-white shadow-md rounded px-8 py-6">
+        <h2 class="text-2xl font-bold mb-6 text-center">Editar Producto</h2>
+        <form action="{{ url_for('edit_product_page', product_id=product.id) }}" method="POST">
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2" for="name">Nombre</label>
+                <input type="text" name="name" id="name" value="{{ product.name }}" required
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2" for="price">Precio</label>
+                <input type="number" name="price" id="price" value="{{ product.price }}" required step="0.01"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 font-bold mb-2" for="quantity">Cantidad</label>
+                <input type="number" name="quantity" id="quantity" value="{{ product.quantity }}" required
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="flex items-center justify-center">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Guardar Cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

@@ -2,22 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Iniciar Sesión</title>
     <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/flash.js') }}" defer></script>
 </head>
 <body class="bg-gray-100 flex justify-center items-center h-screen">
-    <div class="w-full max-w-md mx-auto">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <ul class="mb-4">
-            {% for category, message in messages %}
-            <li class="text-white bg-{{ category }}-500 rounded p-2 my-2 text-center">{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
+    <!-- Notificaciones flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div id="flash-messages" class="fixed top-4 right-4 space-y-2">
+          {% for category, message in messages %}
+            <div class="text-white px-4 py-2 rounded shadow-lg bg-{{ 'red' if category == 'danger' else 'green' }}-500">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
 
-        <!-- Formulario de Login -->
+    <!-- Formulario de Inicio de Sesión -->
+    <div class="w-full max-w-md mx-auto">
         <div class="bg-white shadow-lg rounded-lg px-10 py-8">
             <h2 class="text-center text-2xl font-bold mb-6">Iniciar Sesión</h2>
             <form action="{{ url_for('login') }}" method="POST" class="mb-4">
@@ -29,17 +33,18 @@
                     <input type="password" name="password" placeholder="Contraseña" required
                            class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
-                <div class="flex items-center justify-center">
+                <div class="flex items-center justify-center mb-4">
                     <button type="submit"
                             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline">
-                        Iniciar sesión
+                        Iniciar Sesión
                     </button>
                 </div>
             </form>
 
-            <div class="text-center mt-4">
-                <p class="text-sm">¿No tienes cuenta? <a href="{{ url_for('register_page') }}" class="text-blue-500 hover:underline">Regístrate aquí</a></p>
-               <p class="text-sm">¿Olvidaste tu contraseña? <a href="{{ url_for('reset_password') }}" class="text-blue-500 hover:underline">Restablecer aquí</a></p>
+            <!-- Enlaces para registrar y recuperar contraseña -->
+            <div class="flex justify-between mt-4">
+                <a href="{{ url_for('register_page') }}" class="text-blue-500 hover:underline">¿No tienes cuenta? Regístrate</a>
+                <a href="{{ url_for('reset_password') }}" class="text-blue-500 hover:underline">¿Olvidaste tu contraseña?</a>
             </div>
         </div>
     </div>

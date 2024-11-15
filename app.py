@@ -6,9 +6,9 @@ import os
 import re
 
 app = Flask(__name__)
-app.secret_key = "supersecretkey"  # Necesario para flash y session
+app.secret_key = "supersecretkey"
 DATA_FILE = 'data.json'
-login_attempts = {}  # Para rastrear intentos fallidos de inicio de sesión
+login_attempts = {}
 
 # Funciones de persistencia
 def load_data():
@@ -24,25 +24,15 @@ def load_data():
         data["products"] = []
     return data
 
-
 def save_data(data):
     with open(DATA_FILE, 'w') as f:
         json.dump(data, f, indent=4)
-        print(f"Datos guardados en {DATA_FILE}: {data}")  # Verifica que se guarda correctamente
+        print(f"Datos guardados en {DATA_FILE}: {data}")
 
-
-
-# Función para obtener productos
-def get_products():
-    data = load_data()  # Cargar los datos desde el archivo
-    return data["products"]  # Devolver la lista de productos
-
-
-# Validación del correo electrónico
+# Funciones de validación
 def is_valid_email(email):
     return re.match(r"[^@]+@[^@]+\.[^@]+", email)
 
-# Verificación de complejidad de contraseñas
 def is_valid_password(password):
     return (len(password) >= 8 and any(c.isupper() for c in password)
             and any(c.islower() for c in password)
@@ -66,11 +56,26 @@ def create_user(username, password, full_name, email, phone, role="user"):
     save_data(data)
     return True
 
-
 def read_user(username):
     data = load_data()
     return next((user for user in data["users"] if user["username"] == username), None)
 
+# CRUD de productos
+def add_product(name, price, quantity):
+    data = load_data()
+    product = {
+        "id": len(data["products"]) + 1,
+        "name": name,
+        "price": price,
+        "quantity": quantity
+    }
+    data["products"].append(product)
+    save_data(data)
+
+# Rutas de la aplicación
+@app.route('/')
+def index():
+    return render_template('login.html')
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -78,48 +83,33 @@ def login():
     password = request.form['password']
     user = read_user(username)
 
-    # Verificar si el usuario está bloqueado
     if username in login_attempts:
         attempts, lock_until = login_attempts[username]
         if datetime.now() < lock_until:
-            flash('Usuario bloqueado temporalmente. Intente más tarde.', 'danger')
+            session['error'] = 'Usuario bloqueado temporalmente. Intente más tarde.'
             return redirect(url_for('index'))
 
-    if user:
-        print(f"Contraseña almacenada (hashed): {user['password']}")
-        print(f"Contraseña ingresada: {password}")
-        if check_password_hash(user['password'], password):
-            session['username'] = username
-            session['role'] = user.get("role", "user")  # Asegúrate de que la sesión esté configurada correctamente
-            login_attempts.pop(username, None)  # Reiniciar intentos fallidos
-            flash('Inicio de sesión exitoso!', 'success')
-            return redirect(url_for('dashboard'))
+    if user and check_password_hash(user['password'], password):
+        session['username'] = username
+        session['role'] = user.get("role", "user")
+        login_attempts.pop(username, None)
+        flash('Inicio de sesión exitoso!', 'success')
+        return redirect(url_for('dashboard'))
 
-    flash('Credenciales incorrectas', 'danger')
+    session['error'] = 'Credenciales incorrectas'
     return redirect(url_for('index'))
 
-
-# Cierre automático de sesión por inactividad
 @app.before_request
 def make_session_permanent():
     session.permanent = True
-    app.permanent_session_lifetime = timedelta(minutes=5)  # El tiempo de vida de la sesión se puede ajustar aquí
-
-# Ruta de inicio (login)
-@app.route('/')
-def index():
-    if 'username' in session:
-        return redirect(url_for('dashboard'))  # Si ya está autenticado, redirigir al dashboard
-    return render_template('login.html')  # Si no, mostrar el formulario de login
-
+    app.permanent_session_lifetime = timedelta(minutes=5)
 
 @app.route('/register')
 def register_page():
     if 'username' in session:
-        return redirect(url_for('dashboard'))  # Redirigir al dashboard si ya está autenticado
+        return redirect(url_for('dashboard'))
     return render_template('register.html')
 
-# Ruta para procesar el registro de usuario
 @app.route('/register', methods=['POST'])
 def register():
     full_name = request.form['full_name']
@@ -142,7 +132,6 @@ def register():
         flash('El usuario ya existe.', 'danger')
         return redirect(url_for('register_page'))
 
-
 @app.route('/reset_password', methods=['GET', 'POST'])
 def reset_password():
     if request.method == 'POST':
@@ -150,37 +139,25 @@ def reset_password():
         new_password = request.form['new_password']
         confirm_password = request.form['confirm_password']
 
-        # Verificar si las contraseñas coinciden
         if new_password != confirm_password:
             flash('Las contraseñas no coinciden.', 'danger')
             return redirect(url_for('reset_password'))
 
-        # Verificar si el usuario existe
         user = read_user(username)
         if not user:
             flash('El usuario no existe.', 'danger')
             return redirect(url_for('reset_password'))
 
-        # Imprimir la contraseña actual antes del cambio
-        print(f"Contraseña actual (hashed) para {username}: {user['password']}")
-
-        # Actualizar la contraseña
         hashed_password = generate_password_hash(new_password)
         user['password'] = hashed_password
 
-        # Imprimir la nueva contraseña después del cambio
-        print(f"Nueva contraseña (hashed) para {username}: {hashed_password}")
-
-        # Cargar los datos actuales y actualizar el usuario en la lista
         data = load_data()
         for i, existing_user in enumerate(data['users']):
             if existing_user['username'] == username:
                 data['users'][i] = user
                 break
 
-        # Guardar los datos con la nueva contraseña
         save_data(data)
-
         flash('Contraseña restablecida exitosamente!', 'success')
         return redirect(url_for('index'))
 
@@ -193,23 +170,26 @@ def add_product_route():
         flash('Acceso denegado: solo los administradores pueden agregar productos.', 'danger')
         return redirect(url_for('index'))
 
+    # Validar que el precio y la cantidad sean números positivos
+    try:
+        price = float(request.form['price'])
+        quantity = int(request.form['quantity'])
+
+        if price <= 0 or quantity <= 0:
+            flash('El precio y la cantidad deben ser números positivos.', 'danger')
+            return redirect(url_for('dashboard'))
+
+    except ValueError:
+        flash('El precio debe ser un número decimal y la cantidad un número entero.', 'danger')
+        return redirect(url_for('dashboard'))
+
+    # Obtener el nombre del producto
     name = request.form['name']
-    price = float(request.form['price'])
-    quantity = int(request.form['quantity'])
-    add_product(name, price, quantity)  # Llamamos a la función add_product
+
+    # Agregar el producto
+    add_product(name, price, quantity)
     flash('Producto agregado exitosamente!', 'success')
     return redirect(url_for('dashboard'))
-
-def add_product(name, price, quantity):
-    data = load_data()
-    product = {
-        "id": len(data["products"]) + 1,
-        "name": name,
-        "price": price,
-        "quantity": quantity
-    }
-    data["products"].append(product)
-    save_data(data)
 
 @app.route('/delete_product/<int:product_id>', methods=['POST'])
 def delete_product_route(product_id):
@@ -220,22 +200,59 @@ def delete_product_route(product_id):
     return redirect(url_for('dashboard'))
 
 
+@app.route('/edit_product/<int:product_id>', methods=['GET', 'POST'])
+def edit_product_page(product_id):
+    data = load_data()
+    product = next((p for p in data["products"] if p["id"] == product_id), None)
+
+    if not product:
+        flash("Producto no encontrado.", "danger")
+        return redirect(url_for('dashboard'))
+
+    if request.method == 'POST':
+        # Validación de precio y cantidad para asegurar valores numéricos positivos
+        try:
+            price = float(request.form['price'])
+            quantity = int(request.form['quantity'])
+
+            if price <= 0 or quantity <= 0:
+                flash('El precio y la cantidad deben ser números positivos.', 'danger')
+                return redirect(url_for('edit_product_page', product_id=product_id))
+
+        except ValueError:
+            flash('El precio debe ser un número decimal y la cantidad un número entero.', 'danger')
+            return redirect(url_for('edit_product_page', product_id=product_id))
+
+        # Actualizar los datos del producto si las validaciones son correctas
+        product["name"] = request.form['name']
+        product["price"] = price
+        product["quantity"] = quantity
+        save_data(data)
+        flash("Producto actualizado con éxito.", "success")
+        return redirect(url_for('dashboard'))
+
+    return render_template('edit_product.html', product=product)
+
+
+# Función para obtener productos
+def get_products():
+    data = load_data()  # Cargar los datos desde el archivo
+    return data["products"]  # Devolver la lista de productos
 
 @app.route('/dashboard')
 def dashboard():
     if 'username' not in session:
-        return redirect(url_for('index'))  # Redirigir si no está autenticado
+        return redirect(url_for('index'))
 
-    # Permitir que tanto los administradores como los usuarios comunes vean el dashboard
-    if session.get('role') not in ['admin', 'user']:  # Solo los usuarios o administradores pueden acceder
+    if session.get('role') not in ['admin', 'user']:
         flash('Acceso denegado: solo los administradores o usuarios pueden ver esta página.', 'danger')
         return redirect(url_for('index'))
 
-    # Si es admin, podrán realizar acciones de administrador
     is_admin = session.get('role') == 'admin'
-
     products = get_products()
+
     return render_template('dashboard.html', products=products, is_admin=is_admin)
+
 
 @app.route('/logout')
 def logout():
@@ -243,7 +260,6 @@ def logout():
     session.pop('role', None)
     flash('Cierre de sesión exitoso!', 'info')
     return redirect(url_for('index'))
-
 
 if __name__ == '__main__':
     app.run(debug=True)

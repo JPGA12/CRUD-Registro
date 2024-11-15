@@ -10,7 +10,7 @@
         },
         {
             "username": "brandon",
-            "password": "scrypt:32768:8:1$1pgpIiEi0tgm9cTm$2c47279ab668ca403793d26ae58fb65040a24cd4c9daa9269247e67bbd96419c6016c416788a177c6d7846fe4e6a9c91484425cd8a0b63f0c491375500ae94a8",
+            "password": "scrypt:32768:8:1$OpQDYwqZNAbxGgcS$e87b7873ac7d87a1e03d39218c3c855c837a6935dd958299c164a238dc81844d963348941e06c2cbd4df2928596563ffeac634764242fd1abbc17ee15e930af5",
             "full_name": "brandon corredor ",
             "email": "brandon@corredor.com",
             "phone": "12345678",
@@ -18,12 +18,141 @@
         },
         {
             "username": "andres",
-            "password": "scrypt:32768:8:1$RL460m4cq8cAOfGS$bda4ec0dcae2dc72365985a54a29fb03cc657aba057a13a4058bad4312353c0242ddf2f8e4791aaf80757b44ee772f2557f24d79a9971a4501601372049cbec2",
+            "password": "scrypt:32768:8:1$LEM7wor1z7yw1T56$608e0b9ac90a6db862634ccc818519d77a0a07a1408fd122be32fbde7f4e1109bda430bd0d09c9250574d0407520682bbec57f75374c100fd887144f1b05e7fa",
             "full_name": "andres",
             "email": "andres@gmail.com",
             "phone": "301111111",
             "role": "user"
+        },
+        {
+            "username": "juan",
+            "password": "scrypt:32768:8:1$xknFYirxpgIYpZ7v$fa77a5ea77c11e7e858627c7324cfa6400ba4863ba198e8c6327b02b10c2141240b609ab90106a6cd184f95c766f2ad75c79e06b733f158878720efae988c80b",
+            "full_name": "juan pablo",
+            "email": "juan@gmail.com",
+            "phone": "12345678",
+            "role": "user"
         }
     ],
-    "products": []
+    "products": [
+        {
+            "id": 1,
+            "name": "Chocolatina Jet",
+            "price": 1200,
+            "quantity": 100
+        },
+        {
+            "id": 2,
+            "name": "Bocadillo Vele\u00f1o",
+            "price": 500,
+            "quantity": 200
+        },
+        {
+            "id": 3,
+            "name": "Manimoto",
+            "price": 800,
+            "quantity": 150
+        },
+        {
+            "id": 4,
+            "name": "Chocoramo",
+            "price": 2500,
+            "quantity": 75
+        },
+        {
+            "id": 5,
+            "name": "Muuuu",
+            "price": 700,
+            "quantity": 180
+        },
+        {
+            "id": 6,
+            "name": "Bon Bon Bum",
+            "price": 300,
+            "quantity": 300
+        },
+        {
+            "id": 7,
+            "name": "Arequipe Alpina",
+            "price": 3200,
+            "quantity": 50
+        },
+        {
+            "id": 8,
+            "name": "Galletas Festival",
+            "price": 1000,
+            "quantity": 120
+        },
+        {
+            "id": 9,
+            "name": "Cocosette",
+            "price": 1500,
+            "quantity": 100
+        },
+        {
+            "id": 10,
+            "name": "Chocolates Luker",
+            "price": 1800,
+            "quantity": 90
+        },
+        {
+            "id": 11,
+            "name": "Milo en Barra",
+            "price": 2200,
+            "quantity": 80
+        },
+        {
+            "id": 12,
+            "name": "Bum Bum Chicle",
+            "price": 200,
+            "quantity": 250
+        },
+        {
+            "id": 13,
+            "name": "Nucita",
+            "price": 600,
+            "quantity": 170
+        },
+        {
+            "id": 14,
+            "name": "Gomitas Trululu",
+            "price": 900,
+            "quantity": 140
+        },
+        {
+            "id": 15,
+            "name": "Supercoco",
+            "price": 300,
+            "quantity": 260
+        },
+        {
+            "id": 16,
+            "name": "Cucas",
+            "price": 1300,
+            "quantity": 110
+        },
+        {
+            "id": 17,
+            "name": "Caf\u00e9 \u00c1guila Roja (Instant\u00e1neo)",
+            "price": 2500,
+            "quantity": 60
+        },
+        {
+            "id": 18,
+            "name": "Chocmelos",
+            "price": 1700,
+            "quantity": 130
+        },
+        {
+            "id": 19,
+            "name": "Caramelos La Fruna",
+            "price": 200,
+            "quantity": 300
+        },
+        {
+            "id": 20,
+            "name": "Panelita de Leche",
+            "price": 400,
+            "quantity": 200
+        }
+    ]
 }
